@@ -1885,6 +1885,312 @@ ol.recipe-steps li::before {
 }
 .prom-text { color: var(--ink-dim); font-size: 1rem; line-height: 1.55; }
 
+/* ── QR-код «наведи камеру» ───────────────────────────────── */
+.screen-qr { padding: 14vh 24px 13vh; }
+.qr-wrap {
+  position: relative;
+  margin-top: 5vh;
+  width: min(1200px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+}
+.qr-wrap::before,
+.qr-wrap::after {
+  content: "♥";
+  position: absolute;
+  top: 12%;
+  left: -2%;
+  font-size: 1.5rem;
+  color: rgba(255, 126, 168, 0.5);
+  filter: drop-shadow(0 0 12px rgba(255, 126, 168, 0.5));
+  animation: qrFloat 7.5s ease-in-out infinite;
+  pointer-events: none;
+}
+.qr-wrap::after {
+  top: auto;
+  bottom: 6%;
+  left: auto;
+  right: -1%;
+  font-size: 1.1rem;
+  color: rgba(255, 210, 125, 0.55);
+  animation-duration: 9s;
+  animation-delay: -3s;
+}
+@keyframes qrFloat {
+  0%, 100% { transform: translateY(0) rotate(-8deg) scale(1); opacity: 0.55; }
+  50% { transform: translateY(-22px) rotate(10deg) scale(1.18); opacity: 1; }
+}
+
+.qr-card {
+  position: relative;
+  width: min(460px, 94vw);
+  padding: 28px 26px 30px;
+  border-radius: 26px;
+  text-align: center;
+  background:
+    radial-gradient(120% 80% at 12% 0%, rgba(255, 210, 125, 0.22), transparent 55%),
+    linear-gradient(168deg, #fffdf9 0%, #fff7f3 52%, #fdeef5 100%);
+  box-shadow:
+    0 30px 70px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 210, 125, 0.42),
+    0 0 70px rgba(255, 126, 168, 0.2);
+  opacity: 0;
+  transform: translateY(40px) rotate(-1.6deg) scale(0.96);
+  filter: blur(7px);
+  transition: opacity 1s var(--ease), transform 1s var(--ease), filter 1s var(--ease), box-shadow 0.5s;
+}
+.qr-card.visible {
+  opacity: 1;
+  transform: rotate(-1.6deg);
+  filter: none;
+}
+.qr-card.visible:hover {
+  transform: rotate(0deg) translateY(-8px) scale(1.012);
+  box-shadow:
+    0 40px 90px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 178, 201, 0.7),
+    0 0 110px rgba(255, 126, 168, 0.34);
+}
+
+/* скотч по углам */
+.qr-tape {
+  position: absolute;
+  width: 116px;
+  height: 30px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, rgba(255, 210, 125, 0.55), rgba(255, 210, 125, 0.28));
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(2px);
+}
+.qr-tape-l { top: -13px; left: 26px; transform: rotate(-7deg); }
+.qr-tape-r {
+  top: -11px;
+  right: 30px;
+  transform: rotate(6deg);
+  background: linear-gradient(180deg, rgba(255, 178, 201, 0.6), rgba(255, 178, 201, 0.3));
+}
+
+/* штамп «143 ♥ 520» */
+.qr-stamp {
+  position: absolute;
+  top: -22px;
+  right: -16px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 9px 13px;
+  border-radius: 999px;
+  border: 1.5px dashed rgba(214, 63, 120, 0.75);
+  color: #d63f78;
+  background: rgba(255, 253, 249, 0.9);
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 0.92rem;
+  letter-spacing: 0.06em;
+  transform: rotate(-11deg);
+  box-shadow: 0 6px 18px rgba(214, 63, 120, 0.22);
+}
+.qr-stamp i {
+  font-style: normal;
+  font-size: 0.7rem;
+  color: var(--rose);
+  animation: stampHeart 1.9s ease-in-out infinite;
+}
+@keyframes stampHeart {
+  0%, 100% { transform: scale(1); }
+  15% { transform: scale(1.35); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.2); }
+}
+
+/* рамка с уголками + сам код */
+.qr-frame {
+  position: relative;
+  padding: 15px;
+  border-radius: 18px;
+  background: #fffdf9;
+  border: 1px solid rgba(255, 178, 201, 0.55);
+  overflow: hidden;
+  isolation: isolate;
+}
+.qr-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  background: #fffaf6;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+.qr-corner {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  z-index: 2;
+  pointer-events: none;
+}
+.qr-c-tl { top: 5px; left: 5px; border-top: 2px solid rgba(255, 126, 168, 0.85); border-left: 2px solid rgba(255, 126, 168, 0.85); border-top-left-radius: 8px; }
+.qr-c-tr { top: 5px; right: 5px; border-top: 2px solid rgba(255, 126, 168, 0.85); border-right: 2px solid rgba(255, 126, 168, 0.85); border-top-right-radius: 8px; }
+.qr-c-bl { bottom: 5px; left: 5px; border-bottom: 2px solid rgba(255, 210, 125, 0.9); border-left: 2px solid rgba(255, 210, 125, 0.9); border-bottom-left-radius: 8px; }
+.qr-c-br { bottom: 5px; right: 5px; border-bottom: 2px solid rgba(255, 210, 125, 0.9); border-right: 2px solid rgba(255, 210, 125, 0.9); border-bottom-right-radius: 8px; }
+
+/* «сканирующая» полоска + блик */
+.qr-scan {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 6%;
+  height: 2px;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(255, 126, 168, 0.95) 25%, rgba(255, 210, 125, 0.95) 70%, transparent);
+  box-shadow: 0 0 16px 4px rgba(255, 126, 168, 0.5);
+  opacity: 0;
+  animation: qrScan 4.6s ease-in-out infinite;
+}
+@keyframes qrScan {
+  0% { top: 5%; opacity: 0; }
+  8% { opacity: 1; }
+  42% { top: 94%; opacity: 1; }
+  50% { top: 94%; opacity: 0; }
+  100% { top: 5%; opacity: 0; }
+}
+.qr-shine {
+  position: absolute;
+  inset: -20%;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 43%, rgba(255, 255, 255, 0.75) 50%, transparent 57%);
+  mix-blend-mode: soft-light;
+  animation: qrShine 7s ease-in-out infinite;
+}
+@keyframes qrShine {
+  0%, 68% { transform: translateX(-75%); }
+  100% { transform: translateX(75%); }
+}
+
+/* подписи */
+.qr-pre {
+  margin-top: 20px;
+  font-size: 0.62rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #c23a6d;
+}
+.qr-title {
+  margin-top: 6px;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(1.3rem, 4.4vw, 1.65rem);
+  color: #43243c;
+}
+.qr-url {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 13px auto 0;
+  padding: 7px 15px;
+  border-radius: 999px;
+  border: 1px dashed rgba(255, 126, 168, 0.6);
+  background: rgba(255, 126, 168, 0.08);
+  color: #a13d68;
+  font-size: 0.7rem;
+  letter-spacing: 0.03em;
+  overflow-wrap: anywhere;
+}
+.qr-note {
+  margin-top: 11px;
+  font-size: 0.82rem;
+  color: #8f7286;
+}
+.qr-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 17px;
+}
+.qr-btn {
+  appearance: none;
+  cursor: pointer;
+  border: 1px solid rgba(255, 178, 201, 0.75);
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: linear-gradient(120deg, #e14b83, #b38bff);
+  box-shadow: 0 8px 22px rgba(225, 75, 131, 0.3);
+  text-decoration: none;
+  transition: transform 0.35s var(--ease), box-shadow 0.35s, background 0.35s, color 0.35s, border-color 0.35s;
+}
+.qr-btn:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 14px 30px rgba(225, 75, 131, 0.42); }
+.qr-btn:active { transform: translateY(-1px) scale(0.99); }
+.qr-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.qr-btn-ghost {
+  color: #a13d68;
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: none;
+}
+.qr-btn-ghost:hover {
+  color: #fff;
+  background: linear-gradient(120deg, #ff7ea8, #ffd27d);
+  border-color: transparent;
+  box-shadow: 0 12px 26px rgba(255, 126, 168, 0.3);
+}
+.qr-btn.qr-done {
+  color: #fff;
+  background: linear-gradient(120deg, #2fbf71, #ffd27d);
+  border-color: transparent;
+}
+.qr-alt {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+  color: #a08a99;
+  text-decoration: none;
+  border-bottom: 1px dotted rgba(160, 138, 153, 0.7);
+  transition: color 0.3s, border-color 0.3s;
+}
+.qr-alt:hover { color: #d63f78; border-bottom-color: rgba(214, 63, 120, 0.8); }
+
+/* подсказка сверху */
+.qr-hint {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 9px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--glass);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--ink-dim);
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+  cursor: default;
+}
+.qr-hint-phone { font-size: 1rem; animation: qrBob 2.6s ease-in-out infinite; }
+@keyframes qrBob {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50% { transform: translateY(-6px) rotate(6deg); }
+}
+
+@media (max-width: 520px) {
+  .qr-card { padding: 22px 16px 26px; border-radius: 22px; }
+  .qr-frame { padding: 11px; }
+  .qr-stamp { top: -18px; right: -8px; padding: 7px 11px; font-size: 0.8rem; }
+  .qr-tape { width: 88px; height: 26px; }
+  .qr-actions { gap: 8px; }
+  .qr-btn { padding: 9px 14px; font-size: 0.74rem; }
+}
+
 /* ── Reduced motion ──────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -1897,7 +2203,7 @@ ol.recipe-steps li::before {
   .chapter, .screen-title, .section-sub, .line, .ba-card, .ba-card li, .ba-arrow,
   .tl-item, .reason, .stat, .final-card, .cosmos-wrap, .code-divider, .lang-card,
   .game-card, .cal-tile, .law-row, .eq-big, .recipe-box, .dict-row, .orbit-sys,
-  .pl-row, .rec-card, .prom-row {
+  .pl-row, .rec-card, .prom-row, .qr-card, .qr-scan, .qr-shine {
     opacity: 1 !important;
     transform: none !important;
     filter: none !important;

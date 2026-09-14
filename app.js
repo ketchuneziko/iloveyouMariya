@@ -911,6 +911,7 @@ const PAGE = [
   "ch23",
   "marquee",
   "final",
+  "qr",
 ];
 
 /* ═══════════════════════════════════════════════════════════
@@ -1277,6 +1278,52 @@ function buildFinal() {
   return sec;
 }
 
+/* ── QR-код: «наведи камеру» ── */
+function buildQr() {
+  const sec = document.createElement("section");
+  sec.className = "screen screen-extra screen-qr";
+  sec.id = "qr";
+  sec.dataset.num = "";
+  makeExtraHead(
+    "наведи камеру",
+    "наш код на всю жизнь",
+    "один взгляд — и наша история снова открывается. сохрани его, чтобы не потерять"
+  ).forEach((n) => sec.appendChild(n));
+
+  const wrap = document.createElement("div");
+  wrap.className = "qr-wrap";
+  wrap.innerHTML = [
+    '<div class="qr-hint"><span class="qr-hint-phone" aria-hidden="true">📷</span>камера телефона → наша история</div>',
+    '<div class="qr-card">',
+    '<span class="qr-tape qr-tape-l" aria-hidden="true"></span>',
+    '<span class="qr-tape qr-tape-r" aria-hidden="true"></span>',
+    '<span class="qr-stamp" aria-hidden="true">143<i>♥</i>520</span>',
+    '<div class="qr-frame">',
+    '<i class="qr-corner qr-c-tl" aria-hidden="true"></i>',
+    '<i class="qr-corner qr-c-tr" aria-hidden="true"></i>',
+    '<i class="qr-corner qr-c-bl" aria-hidden="true"></i>',
+    '<i class="qr-corner qr-c-br" aria-hidden="true"></i>',
+    '<img class="qr-img" src="assets/qr/qr-embed.png" width="1080" height="1080" ' +
+      'alt="QR-код со ссылкой на эту историю" loading="lazy" decoding="async" draggable="false">',
+    '<span class="qr-scan" aria-hidden="true"></span>',
+    '<span class="qr-shine" aria-hidden="true"></span>',
+    "</div>",
+    '<p class="qr-pre">для Марии</p>',
+    '<p class="qr-title">до тебя — после тебя</p>',
+    '<p class="qr-url" id="qr-url">ketchuneziko.github.io/iloveyouMariya</p>',
+    '<p class="qr-note">наведи камеру телефона — и она откроется</p>',
+    '<div class="qr-actions">',
+    '<a class="qr-btn" href="assets/qr/qr-night.png" download="наш-qr-код.png">♥ скачать картинку</a>',
+    '<button class="qr-btn qr-btn-ghost" id="qr-copy" type="button">скопировать ссылку</button>',
+    "</div>",
+    '<a class="qr-alt" href="assets/qr/qr-plain.png" download="наш-qr-чб.png"' +
+      ' target="_blank" rel="noopener">если камера капризничает — вот строгая чёрно-белая версия</a>',
+    "</div>",
+  ].join("");
+  sec.appendChild(wrap);
+  return sec;
+}
+
 /* ── сборка в нужном порядке ── */
 const built = {};
 STORY.forEach((ch, i) => (built[ch.id] = buildChapter(ch, i)));
@@ -1286,6 +1333,7 @@ built.cosmos = buildCosmos();
 built.stats = buildStats();
 built.final = buildFinal();
 built.marquee = buildMarquee();
+built.qr = buildQr();
 
 let cdN = 0;
 PAGE.forEach((id) => {
@@ -1731,7 +1779,7 @@ function celebrateFinal() {
 
 const toReveal = Array.from(
   document.querySelectorAll(
-    ".screen-title, .chapter, .section-sub, .line, .ba-card, .ba-arrow, .tl-item, .reason, .stat, .final-card, .cosmos-wrap, .code-divider, .lang-card, .orbit-sys, .prom-row"
+    ".screen-title, .chapter, .section-sub, .line, .ba-card, .ba-arrow, .tl-item, .reason, .stat, .final-card, .cosmos-wrap, .code-divider, .lang-card, .orbit-sys, .prom-row, .qr-card"
   )
 );
 
@@ -2055,6 +2103,63 @@ btnNo.addEventListener("click", () => {
   if (noUnlocked) showChoice("no");
   else tryNo();
 });
+
+/* ═══════════════════════════════════════════════════════════
+   QR-БЛОК: ссылка, копирование, сердечки
+   ═══════════════════════════════════════════════════════════ */
+
+const qrSection = document.getElementById("qr");
+if (qrSection) {
+  /* ссылка всегда актуальная — если домен поменяется, подпись и копирование подстроятся */
+  const link = location.href.split("#")[0];
+  const urlEl = qrSection.querySelector("#qr-url");
+  if (urlEl) urlEl.textContent = link.replace(/^https?:\/\//, "").replace(/\/$/, "");
+
+  const copyBtn = qrSection.querySelector("#qr-copy");
+  if (copyBtn) {
+    copyBtn.addEventListener("click", async () => {
+      let ok = false;
+      try {
+        await navigator.clipboard.writeText(link);
+        ok = true;
+      } catch (e) {
+        const ta = document.createElement("textarea");
+        ta.value = link;
+        ta.setAttribute("readonly", "");
+        ta.style.cssText = "position:fixed;top:-100px;opacity:0";
+        document.body.appendChild(ta);
+        ta.select();
+        try { ok = document.execCommand("copy"); } catch (e2) { ok = false; }
+        ta.remove();
+      }
+      const r = copyBtn.getBoundingClientRect();
+      heartBurst((r.left + r.width / 2) * DPR, (r.top + r.height / 2) * DPR, ok ? 16 : 4, 0.95);
+      copyBtn.classList.add("qr-done");
+      copyBtn.textContent = ok ? "готово ♥ ссылка с тобой" : link;
+      setTimeout(() => {
+        copyBtn.classList.remove("qr-done");
+        copyBtn.textContent = "скопировать ссылку";
+      }, 2800);
+    });
+  }
+
+  /* при появлении карточки сыпятся сердечки */
+  if (!reduced) {
+    const qio = new IntersectionObserver(
+      (es) => {
+        if (!es.some((e) => e.isIntersecting)) return;
+        qio.disconnect();
+        const card = qrSection.querySelector(".qr-card");
+        if (!card) return;
+        const r = card.getBoundingClientRect();
+        heartBurst((r.left + r.width * 0.16) * DPR, (r.top + r.height * 0.2) * DPR, 7, 0.8);
+        setTimeout(() => heartBurst((r.left + r.width * 0.86) * DPR, (r.top + r.height * 0.34) * DPR, 7, 0.8), 260);
+      },
+      { threshold: 0.42 }
+    );
+    qio.observe(qrSection);
+  }
+}
 
 /* ═══════════════════════════════════════════════════════════
    ПАСХАЛКА: набери «люблю»
