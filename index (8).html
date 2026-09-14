@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>до тебя — после тебя</title>
+  <meta name="description" content="одна длинная история: ты изменила мою жизнь и разделила её на до тебя и после тебя." />
+  <meta name="theme-color" content="#05060d" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── Фадинг из ночи при загрузке ── -->
+  <div class="dream" aria-hidden="true"></div>
+
+  <!-- ── Живой фон: звёзды, которые «прогреваются» от холодной ночи к тёплой ── -->
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
+  <div class="sky sky-cold" id="sky-cold" aria-hidden="true"><div class="nebula"></div><div class="nebula"></div><div class="nebula"></div></div>
+  <div class="sky sky-warm" id="sky-warm" aria-hidden="true"><div class="nebula"></div><div class="nebula"></div><div class="nebula"></div></div>
+  <div class="glow" id="glow" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- ── Слой эффектов: сердца при клике ── -->
+  <canvas id="fx-canvas" aria-hidden="true"></canvas>
+
+  <!-- ── Кастомный курсор ── -->
+  <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
+  <div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
+
+  <!-- ── Прогресс истории ── -->
+  <div class="scroll-progress" aria-hidden="true"><span id="progress-bar"></span></div>
+
+  <!-- ── Индикатор главы ── -->
+  <div class="chapter-indicator" id="chapter-indicator" aria-hidden="true">
+    <b id="chapter-num">01</b><span class="chapter-total">/ 23</span>
+  </div>
+
+  <!-- ── Музыка ── -->
+  <button class="music-toggle" id="music-toggle" title="музыка" aria-label="Включить или выключить музыку">
+    <span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+  </button>
+
+  <!-- ── Навигация по главам (точки справа) ── -->
+  <nav class="dots-nav" id="dots-nav" aria-label="главы истории"></nav>
+
+  <!-- ── Навигация по разделам ── -->
+  <nav class="nav" id="nav">
+    <a href="#ch1">Начало</a>
+    <a href="#ch4">До / С тобой</a>
+    <a href="#timeline">Даты</a>
+    <a href="#reasons">Причины</a>
+    <a href="#cosmos">Созвездие</a>
+    <a href="#stats">Цифры</a>
+    <a href="#ch23">Письмо</a>
+    <a href="#final" class="nav-accent">Финал</a>
+  </nav>
+
+  <!-- ── Интро ── -->
+  <div class="intro" id="intro">
+    <span class="intro-float" style="--x:8%; --d:9s; --ds:0s; --s:0.8rem" aria-hidden="true">♥</span>
+    <span class="intro-float" style="--x:22%; --d:12s; --ds:2.5s; --s:1.1rem" aria-hidden="true">♥</span>
+    <span class="intro-float" style="--x:38%; --d:10s; --ds:5s; --s:0.7rem" aria-hidden="true">✦</span>
+    <span class="intro-float" style="--x:55%; --d:13s; --ds:1.2s; --s:1rem" aria-hidden="true">♥</span>
+    <span class="intro-float" style="--x:70%; --d:9.5s; --ds:4s; --s:0.9rem" aria-hidden="true">♥</span>
+    <span class="intro-float" style="--x:84%; --d:11s; --ds:6.5s; --s:1.2rem" aria-hidden="true">✦</span>
+    <span class="intro-float" style="--x:93%; --d:10.5s; --ds:3s; --s:0.75rem" aria-hidden="true">♥</span>
+    <div class="intro-stage">
+      <p class="intro-line intro-line-1">до тебя</p>
+      <h1 class="intro-line intro-line-2">была просто ночь.</h1>
+      <p class="intro-line intro-line-3">а потом появилась ты — и на небе стало на одну звезду больше.</p>
+      <button class="intro-btn" id="intro-btn">
+        <span>начать историю</span>
+        <span class="intro-btn-icon">✦</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── История (заполняется из app.js) ── -->
+  <main id="story"></main>
+
+  <footer class="footer">
+    <div class="footer-heart" aria-hidden="true">♥</div>
+    <p class="footer-name">Мария</p>
+    <p class="footer-sub">звёзды на фоне настоящие, просто очень маленькие</p>
+  </footer>
+
+  <!-- ── Оверлей с её ответом ── -->
+  <div class="choice" id="choice" aria-hidden="true">
+    <div class="choice-card" id="choice-card"></div>
+  </div>
+
+  <script src="app.js"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3ae37ce6c048989',t:'MTc4OTM3NjYwMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
